@@ -41,15 +41,13 @@ sub validate_data {
 sub run_zanata_cli {
     my ($self, $action, $langs, $capture) = @_;
 
-    my $command = $action;
+    my $command = '--batch-mode '.$action;
 
     $command .= ' --project-config '.$self->{data}->{project_config};
 
     if (defined $self->{data}->{user_config}) {
         $command .= ' --user-config '.$self->{data}->{user_config};
     }
-
-    $command .= ' --batch-mode';
 
     $command = 'zanata-cli '.$command;
     
