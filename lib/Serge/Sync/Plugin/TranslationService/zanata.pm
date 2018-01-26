@@ -19,6 +19,7 @@ sub init {
     $self->merge_schema({
         project_config => 'STRING',
         user_config => 'STRING',
+        push_type => 'STRING'
     });
 }
 
@@ -29,12 +30,21 @@ sub validate_data {
 
     $self->{data}->{project_config} = subst_macros($self->{data}->{project_config});
     $self->{data}->{user_config} = subst_macros($self->{data}->{user_config});
+    $self->{data}->{push_type} = subst_macros($self->{data}->{push_type});
 
     die "'project_config' not defined" unless defined $self->{data}->{project_config};
     die "'project_config', which is set to '$self->{data}->{project_config}', does not point to a valid file.\n" unless -f $self->{data}->{project_config};
 
     if (defined $self->{data}->{user_config}) {
         die "'user_config', which is set to '$self->{data}->{user_config}', does not point to a valid file.\n" unless -f $self->{data}->{user_config};
+    }
+
+    if (!(defined $self->{data}->{push_type})) {
+        $self->{data}->{push_type} = 'both';
+    }
+
+    if (($self->{data}->{push_type} ne 'both') and ($self->{data}->{push_type} ne 'source')) {
+        die "'push_type', which is set to $self->{data}->{push_type}, is not one of the valid options: 'source' or 'both'";
     }
 }
 
@@ -64,7 +74,7 @@ sub pull_ts {
 sub push_ts {
     my ($self, $langs) = @_;
 
-    $self->run_zanata_cli('push --push-type source', ());
+    $self->run_zanata_cli("push --push-type $self->{data}->{push_type}", ());
 }
 
 1;
