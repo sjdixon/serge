@@ -20,7 +20,8 @@ sub init {
         project_id     => 'STRING',
         application_properties => 'STRING',
         source_files_path => 'STRING',
-        localized_files_path => 'STRING'
+        localized_files_path => 'STRING',
+        import_translations => 'BOOLEAN'
     });
 }
 
@@ -33,6 +34,7 @@ sub validate_data {
     $self->{data}->{project_id} = subst_macros($self->{data}->{project_id});
     $self->{data}->{source_files_path} = subst_macros($self->{data}->{source_files_path});
     $self->{data}->{localized_files_path} = subst_macros($self->{data}->{localized_files_path});
+    $self->{data}->{import_translations} = subst_macros($self->{data}->{import_translations});
 
     die "'project_id' not defined" unless defined $self->{data}->{project_id};
 
@@ -46,6 +48,7 @@ sub validate_data {
     die "'localized_files_path' not defined" unless defined $self->{data}->{localized_files_path};
     die "'localized_files_path', which is set to '$self->{data}->{localized_files_path}', does not point to a valid directory.\n" unless -d $self->{data}->{localized_files_path};
 
+    $self->{data}->{import_translations} = 1 unless defined $self->{data}->{import_translations};
 }
 
 sub run_mojito_cli {
@@ -76,7 +79,19 @@ sub pull_ts {
 sub push_ts {
     my ($self, $langs) = @_;
 
-    $self->run_mojito_cli('push', ());
+    my $cli_return = $self->run_mojito_cli('push', ());
+
+    if ($cli_return != 0) {
+        return $cli_return;
+    }
+
+    if ($self->{data}->{import_translations}) {
+        my $action = 'import -t '.$self->{data}->{localized_files_path};
+
+        $cli_return = $self->run_mojito_cli($action, $langs);
+    }
+
+    return $cli_return;
 }
 
 1;
