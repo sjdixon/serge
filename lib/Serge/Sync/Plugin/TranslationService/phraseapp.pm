@@ -15,10 +15,27 @@ sub init {
     $self->SUPER::init(@_);
 
     $self->{optimizations} = 1; # set to undef to disable optimizations
+
+    $self->merge_schema({
+        config_file => 'STRING',
+    });
 }
 
-sub run_phraseapp_cmd {
+sub validate_data {
+    my ($self) = @_;
+
+    $self->SUPER::validate_data;
+
+    $self->{data}->{config_file} = subst_macros($self->{data}->{config_file});
+
+    die "'config_file' not defined" unless defined $self->{data}->{config_file};
+    die "'config_file', which is set to '$self->{data}->{config_file}', does not point to a valid file.\n" unless -f $self->{data}->{config_file};
+}
+
+sub run_phraseapp_cli {
     my ($self, $action, $langs, $capture) = @_;
+
+    $ENV{'PHRASEAPP_CONFIG'} = $self->{data}->{config_file};
 
     my $command = $action;
 
@@ -30,13 +47,13 @@ sub run_phraseapp_cmd {
 sub pull_ts {
     my ($self, $langs) = @_;
 
-    return $self->run_phraseapp_cmd('pull', $langs);
+    return $self->run_phraseapp_cli('pull', $langs);
 }
 
 sub push_ts {
     my ($self, $langs) = @_;
 
-    $self->run_phraseapp_cmd('push', $langs);
+    $self->run_phraseapp_cli('push', $langs);
 }
 
 1;
