@@ -18,6 +18,7 @@ sub init {
 
     $self->merge_schema({
         config_file => 'STRING',
+        wait_for_uploads => 'BOOLEAN'
     });
 }
 
@@ -27,9 +28,12 @@ sub validate_data {
     $self->SUPER::validate_data;
 
     $self->{data}->{config_file} = subst_macros($self->{data}->{config_file});
+    $self->{data}->{wait_for_uploads} = subst_macros($self->{data}->{wait_for_uploads});
 
     die "'config_file' not defined" unless defined $self->{data}->{config_file};
     die "'config_file', which is set to '$self->{data}->{config_file}', does not point to a valid file.\n" unless -f $self->{data}->{config_file};
+
+    $self->{data}->{wait_for_uploads} = 1 unless defined $self->{data}->{wait_for_uploads};
 }
 
 sub run_phraseapp_cli {
@@ -53,7 +57,13 @@ sub pull_ts {
 sub push_ts {
     my ($self, $langs) = @_;
 
-    $self->run_phraseapp_cli('push', $langs);
+    my $action = 'push';
+
+    if ($self->{data}->{wait_for_uploads}) {
+        $action = $action.' --wait';
+    }
+
+    $self->run_phraseapp_cli($action, $langs);
 }
 
 1;
