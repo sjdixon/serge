@@ -18,7 +18,8 @@ sub init {
     $self->{optimizations} = 1; # set to undef to disable optimizations
 
     $self->merge_schema({
-        root_directory => 'STRING'
+        root_directory => 'STRING',
+        push_translations => 'BOOLEAN'
     });
 }
 
@@ -32,6 +33,8 @@ sub validate_data {
 
     die "'root_directory' not defined" unless defined $self->{data}->{root_directory};
     die "'root_directory', which is set to '$self->{data}->{root_directory}', does not point to a valid file.\n" unless -d $self->{data}->{root_directory};
+
+    $self->{data}->{push_translations} = 1 unless defined $self->{data}->{push_translations};
 }
 
 sub run_transifex_cli {
@@ -62,7 +65,15 @@ sub pull_ts {
 sub push_ts {
     my ($self, $langs) = @_;
 
-    return $self->run_transifex_cli('push --source', $langs);;
+    my $cli_return = 0;
+
+    if ($self->{data}->{push_translations}) {
+        $cli_return = $self->run_transifex_cli('push --source --translations', $langs);
+    } else {
+        $cli_return = $self->run_transifex_cli('push --source', $langs);
+    }
+
+    return $cli_return;
 }
 
 1;
