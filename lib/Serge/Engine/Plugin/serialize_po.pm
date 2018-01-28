@@ -12,10 +12,34 @@ sub name {
     return '.PO (Gettext) Serializer';
 }
 
+sub init {
+    my $self = shift;
+
+    $self->SUPER::init(@_);
+
+    $self->merge_schema({
+        use_hint_for_context => 'BOOLEAN',
+        use_key_as_msgctx => 'BOOLEAN',
+    });
+}
+
+sub validate_data {
+    my $self = shift;
+
+    $self->SUPER::validate_data;
+
+    $self->{data}->{use_hint_for_context} = 0 unless defined $self->{data}->{use_hint_for_context};
+
+    $self->{data}->{use_key_as_msgctx} = 0 unless defined $self->{data}->{use_key_as_msgctx};
+}
+
 sub serialize {
     my ($self, $units, $file, $lang) = @_;
 
     my $locale = locale_from_lang($lang);
+
+    my $use_hint_for_context = $self->{data}->{use_hint_for_context};
+    my $use_key_as_msgctx = $self->{data}->{use_key_as_msgctx};
 
     my $text = qq|msgid ""
 msgstr ""
@@ -43,19 +67,60 @@ msgstr ""
         }
 
         my $dev_comment = $unit->{hint};
+        my @dev_comment_lines = ();
 
         if ($dev_comment ne '') {
             $dev_comment =~ s/\n/\n#. /sg;
-            $text .= "#. $dev_comment\n";
+
+            if (!$use_hint_for_context) {
+                $text .= "#. $dev_comment\n";
+            } else {
+                @dev_comment_lines = split('\n', $dev_comment);
+
+                $dev_comment = @dev_comment_lines[0];
+
+                my $dev_comment_lines_size = scalar @dev_comment_lines;
+
+                if ($dev_comment_lines_size > 1) {
+                    shift(@dev_comment_lines);
+
+                    my $real_dev_comment = join "\n", @dev_comment_lines;
+
+                    $text .= "$real_dev_comment\n";
+                }
+            }
+        }
+
+        my $context = $unit->{context};
+
+        if ($use_hint_for_context) {
+            $context = $dev_comment;
+        }
+
+        if ($use_hint_for_context && ($unit->{context} ne '')) {
+            $text .= "#: Context: $unit->{context}\n";
         }
 
         $text .= "#: File: $file\n";
-        $text .= "#: ID: $unit->{key}\n";
+
+        if ($use_key_as_msgctx) {
+            if (($context ne '')) {
+                $text .= "#: ID: $context\n";
+            }
+        } else {
+            $text .= "#: ID: $unit->{key}\n";
+        }
+
         $text .= "#, fuzzy\n" if $unit->{fuzzy};
 
         # Print the translation entry
 
-        $text .= "msgctxt ".po_wrap($unit->{context})."\n" if $unit->{context} ne '';
+        if ($use_key_as_msgctx) {
+            $text .= "msgctxt ".po_wrap($unit->{key})."\n";
+        } else {
+            $text .= "msgctxt ".po_wrap($context)."\n" if $context ne '';
+        }
+
         $text .= join("\n", po_serialize_msgid($unit->{source}))."\n";
         # for now, just use one `msgstr[0]=""` placeholder for plural strings,
         # disregarding the number of plurals supported by a language
@@ -67,6 +132,9 @@ msgstr ""
 
 sub deserialize {
     my ($self, $textref) = @_;
+
+    my $use_hint_for_context = $self->{data}->{use_hint_for_context};
+    my $use_key_as_msgctx = $self->{data}->{use_key_as_msgctx};
 
     my @units;
     my $header_skipped;
@@ -139,12 +207,25 @@ sub deserialize {
             $key_prefix_line = ($line =~ m/^#: ID:$/);
             # end fix for poedit
 
-            $key = $1 if $line =~ m/^#: ID: (.*)$/;
+            if ($use_hint_for_context) {
+                $context = $1 if $line =~ m/^#: Context: (.*)$/;
+            }
+
+            if (!$use_key_as_msgctx) {
+                $key = $1 if $line =~ m/^#: ID: (.*)$/;
+
+                if (!$use_hint_for_context) {
+                    $context = $1 if $line =~ m/^msgctxt "(.*)"$/;
+                }
+            } else {
+                $key = $1 if $line =~ m/^msgctxt "(.*)"$/;
+            }
+
             $strings[0] = $1 if $line =~ m/^msgid "(.*)"$/;
             $strings[1] = $1 if $line =~ m/^msgid_plural "(.*)"$/;
             @translations = ($1) if $line =~ m/^msgstr "(.*)"$/;
             $translations[$1] = ($2) if $line =~ m/^msgstr\[(\d+)\] "(.*)"$/;
-            $context = $1 if $line =~ m/^msgctxt "(.*)"$/;
+
             $flags_str = $1 if $line =~ m/^#, (.*)$/;
         }
 
@@ -159,13 +240,19 @@ sub deserialize {
         my $comment = join("\n", @comments);
 
         unescape_strref(\$string);
-        unescape_strref(\$context);
         unescape_strref(\$translation);
+        if (!$use_hint_for_context) {
+            unescape_strref(\$context);
+        }
 
         # Skip blocks where both translation and comment are not set. If one wants to clear the translation,
         # he should at least set the comment (or leave an old one if it existed).
 
         next unless ($translation or $comment);
+
+        if ($use_hint_for_context && ($translation eq $string)) {
+            next;
+        }
 
         # Skip blocks with no key defined (e.g. header entry)
 
@@ -216,14 +303,14 @@ sub deserialize {
         }
 
         push @units, {
-            key => $key,
-            source => $string,
-            context => $context,
-            target => $translation,
-            comment => $comment, # translator's comments
-            fuzzy => $fuzzy,
-            flags => \@flags,
-        };
+                key => $key,
+                source => $string,
+                context => $context,
+                target => $translation,
+                comment => $comment, # translator's comments
+                fuzzy => $fuzzy,
+                flags => \@flags,
+            };
     }
 
     return \@units;
