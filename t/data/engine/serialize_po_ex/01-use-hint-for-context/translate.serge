@@ -1,0 +1,23 @@
+jobs
+{
+    {
+        @inherit                                 ../../common.serge#job_template
+
+        source_match                             \.properties$
+
+        parser
+        {
+            plugin                               parse_properties
+        }
+
+        serializer
+        {
+            plugin                               serialize_po_ex
+
+            data
+            {
+                use_hint_for_context             YES
+            }
+        }
+    }
+}
