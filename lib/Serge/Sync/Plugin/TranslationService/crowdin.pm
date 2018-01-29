@@ -6,7 +6,7 @@ use strict;
 use Serge::Util qw(subst_macros);
 
 sub name {
-    return 'Crowdin service synchronization plugin';
+    return 'Crowdin translation server (https://crowdin.com) synchronization plugin';
 }
 
 sub init {
@@ -18,6 +18,7 @@ sub init {
 
     $self->merge_schema({
         config_file => 'STRING',
+        upload_translations => 'BOOLEAN'
     });
 }
 
@@ -27,9 +28,12 @@ sub validate_data {
     $self->SUPER::validate_data;
 
     $self->{data}->{config_file} = subst_macros($self->{data}->{config_file});
+    $self->{data}->{upload_translations} = subst_macros($self->{data}->{upload_translations});
 
     die "'config_file' not defined" unless defined $self->{data}->{config_file};
     die "'config_file', which is set to '$self->{data}->{config_file}', does not point to a valid file.\n" unless -f $self->{data}->{config_file};
+
+    $self->{data}->{upload_translations} = 1 unless defined $self->{data}->{upload_translations};
 }
 
 sub run_crowdin_cli {
@@ -60,7 +64,17 @@ sub pull_ts {
 sub push_ts {
     my ($self, $langs) = @_;
 
-    $self->run_crowdin_cli('upload sources', ());
+    my $cli_return = $self->run_crowdin_cli('upload sources', ());
+
+    if ($cli_return != 0) {
+        return $cli_return;
+    }
+
+    if ($self->{data}->{upload_translations}) {
+        $cli_return = $self->run_crowdin_cli('upload translations', $langs);
+    }
+
+    return $cli_return;
 }
 
 1;
