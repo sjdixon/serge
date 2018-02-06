@@ -1,22 +1,24 @@
 <!DOCTYPE TS>
-<TS language="test_TEST" version="2.0">
+<TS language="test_TEST" version="5.0">
     <context>
-        <name>sample</name>
+        <name>block-level context</name>
         <message>
             <source>Value 1</source>
-            <translation type="unfinished">Ṽáļũē 1</translation>
+            <comment>message-level context</comment>
+            <extracomment>This is a comment for Value 1</extracomment>
+            <translation>Ṽáļũē 1</translation>
         </message>
         <message>
             <source>Value 2</source>
-            <translation type="unfinished">Ṽáļũē 2</translation>
+            <translation>Ṽáļũē 2</translation>
         </message>
         <message>
             <source>"Value1" &lt;> "&amp;Value2"</source>
-            <translation type="unfinished">"Ṽáļũē1" &lt;> "&amp;Ṽáļũē2"</translation>
+            <translation>"Ṽáļũē1" &lt;> "&amp;Ṽáļũē2"</translation>
         </message>
     </context>
     <message>
         <source>Value 3</source>
-        <translation type="unfinished">Ṽáļũē 3</translation>
+        <translation>Ṽáļũē 3</translation>
     </message>
 </TS>
