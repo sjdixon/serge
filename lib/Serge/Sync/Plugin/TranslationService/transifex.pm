@@ -44,14 +44,12 @@ sub run_transifex_cli {
 
     my $command = $action;
 
+    $command .= ' --root '.$self->{data}->{root_directory};
+
     $command = 'tx '.$command;
     print "Running '$command'...\n";
 
-    {
-        local $CWD = $self->{data}->{root_directory};
-
-        $cli_return = $self->run_cmd($command, $capture);
-    }
+    $cli_return = $self->run_cmd($command, $capture);
 
     return $cli_return;
 }
