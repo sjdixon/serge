@@ -46,12 +46,28 @@ sub run_transifex_cli {
 
     $command .= ' --root '.$self->{data}->{root_directory};
 
+    if ($langs) {
+        my @locales = map {$self->get_transifex_locale($_)} @$langs;
+
+        my $locales_as_string = join(',', @locales);
+
+        $command .= ' --language '.$locales_as_string;
+    }
+
     $command = 'tx '.$command;
     print "Running '$command'...\n";
 
     $cli_return = $self->run_cmd($command, $capture);
 
     return $cli_return;
+}
+
+sub get_transifex_locale {
+    my ($self, $lang) = @_;
+
+    $lang =~ s/-(\w+)$/'_'.uc($1)/e; # convert e.g. 'pt-br' to 'pt_BR'
+
+    return $lang;
 }
 
 sub pull_ts {
