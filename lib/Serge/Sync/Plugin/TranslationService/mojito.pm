@@ -3,7 +3,7 @@ use parent Serge::Sync::Plugin::Base::TranslationService, Serge::Interface::SysC
 
 use strict;
 
-use Serge::Util qw(subst_macros);
+use Serge::Util qw(subst_macros culture_from_lang);
 
 sub name {
     return 'Mojito translation server (http://www.mojito.global/) synchronization plugin';
@@ -62,10 +62,26 @@ sub run_mojito_cli {
         $command .= ' --spring.config.location='.$self->{data}->{application_properties};
     }
 
+    if ($langs) {
+        my @locale_mapping = map {$self->get_mojito_locale_mapping($_)} @$langs;
+
+        my $locale_mapping_as_string = join(',', @locale_mapping);
+
+        $command .= ' --locale-mapping '.$locale_mapping_as_string;
+    }
+
     $command = 'mojito '.$command;
     print "Running '$command'...\n";
 
     return $self->run_cmd($command, $capture);
+}
+
+sub get_mojito_locale_mapping {
+    my ($self, $lang) = @_;
+
+    $lang = culture_from_lang($lang);
+
+    return $lang.':'.$lang;
 }
 
 sub pull_ts {
