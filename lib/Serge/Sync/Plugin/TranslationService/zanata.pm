@@ -59,10 +59,26 @@ sub run_zanata_cli {
         $command .= ' --user-config '.$self->{data}->{user_config};
     }
 
+    if ($langs) {
+        my @locales = map {$self->get_zanata_locale($_)} @$langs;
+
+        my $locales_as_string = join(',', @locales);
+
+        $command .= ' --locales '.$locales_as_string;
+    }
+
     $command = 'zanata-cli '.$command;
     
     print "Running '$command'...\n";
     return $self->run_cmd($command, $capture);
+}
+
+sub get_zanata_locale {
+    my ($self, $lang) = @_;
+
+    $lang =~ s/-(\w+)$/'-'.uc($1)/e; # convert e.g. 'pt-br' to 'pt-BR'
+
+    return $lang;
 }
 
 sub pull_ts {
@@ -74,7 +90,7 @@ sub pull_ts {
 sub push_ts {
     my ($self, $langs) = @_;
 
-    $self->run_zanata_cli("push --push-type $self->{data}->{push_type}", ());
+    $self->run_zanata_cli("push --push-type $self->{data}->{push_type}", $langs);
 }
 
 1;
