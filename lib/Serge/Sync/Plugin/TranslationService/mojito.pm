@@ -3,7 +3,7 @@ use parent Serge::Sync::Plugin::Base::TranslationService, Serge::Interface::SysC
 
 use strict;
 
-use Serge::Util qw(subst_macros culture_from_lang);
+use Serge::Util qw(subst_macros culture_from_lang locale_from_lang);
 
 sub name {
     return 'Mojito translation server (http://www.mojito.global/) synchronization plugin';
@@ -79,9 +79,11 @@ sub run_mojito_cli {
 sub get_mojito_locale_mapping {
     my ($self, $lang) = @_;
 
-    $lang = culture_from_lang($lang);
+    my $locale = locale_from_lang($lang);
 
-    return $lang.':'.$lang;
+    my $bcp47_locale = culture_from_lang($lang);
+
+    return $locale.':'.$bcp47_locale;
 }
 
 sub pull_ts {
