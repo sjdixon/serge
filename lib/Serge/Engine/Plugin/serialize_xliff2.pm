@@ -54,7 +54,7 @@ sub validate_data {
 
     $self->{data}->{state_untranslated} = 'initial' unless defined $self->{data}->{state_untranslated};
 
-    $self->{data}->{sub_state_fuzzy} = 'fuzzy' unless defined $self->{data}->{sub_state_fuzzy};
+    $self->{data}->{sub_state_fuzzy} = 'srg:fuzzy' unless defined $self->{data}->{sub_state_fuzzy};
 
     $self->{data}->{no_target_for_untranslated} = 1 unless defined $self->{data}->{no_target_for_untranslated};
 }
