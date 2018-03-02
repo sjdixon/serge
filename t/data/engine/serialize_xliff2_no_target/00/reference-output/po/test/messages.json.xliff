@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mda="urn:oasis:names:tc:xliff:metadata:2.0" srcLang="en" trgLang="test" version="2.0">
+    <file id="3489fedb0dea03fb19e132b95855dda8" original="messages.json">
+        <unit id="37881f5ca702bb268877e4edb0edc83d" name="string1">
+            <notes>
+                <note category="developer">Description 1</note>
+            </notes>
+            <segment state="initial">
+                <source xml:lang="en">Value 1</source>
+            </segment>
+        </unit>
+        <unit id="7d8ec73df55728a29c38a9f7741aefa6" name="string2">
+            <notes>
+                <note category="developer">Description 2</note>
+            </notes>
+            <segment state="translated">
+                <source xml:lang="en">Value 2</source>
+                <target xml:lang="test">Test Translation Two</target>
+            </segment>
+        </unit>
+    </file>
+</xliff>

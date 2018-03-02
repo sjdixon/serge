@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mda="urn:oasis:names:tc:xliff:metadata:2.0" srcLang="en" trgLang="test" version="2.0">
+    <file id="b787ba40070e36ef734f8232b478c48e" original="StripesResources.properties">
+        <unit id="05c382b374518cc317f4ec0f98409fa0">
+            <notes>
+                <note category="developer">foo</note>
+                <note category="developer">this is a comment for foo</note>
+            </notes>
+            <segment state="translated">
+                <source xml:lang="en">bar</source>
+                <target xml:lang="test">ḃáŕ</target>
+            </segment>
+        </unit>
+        <unit id="e5f2adbdbe00c558062db891f2072489">
+            <notes>
+                <note category="developer">foo2</note>
+                <note category="developer">this is a comment for foo2</note>
+                <note category="developer">#specialFlag</note>
+            </notes>
+            <segment state="translated">
+                <source xml:lang="en">bar2</source>
+                <target xml:lang="test">ḃáŕ2</target>
+            </segment>
+        </unit>
+        <unit id="3fe4481f751cc3733375d9b0a5902031">
+            <notes>
+                <note category="developer">foo3</note>
+                <note category="developer">#specialFlagWithValue=value</note>
+            </notes>
+            <segment state="translated">
+                <source xml:lang="en">bar3</source>
+                <target xml:lang="test">ḃáŕ3</target>
+            </segment>
+        </unit>
+        <unit id="a257f7b12d48b49db500386f8a356a6c">
+            <notes>
+                <note category="developer">foo4</note>
+                <note category="developer">this is a comment for foo4 (line 1 of 2)</note>
+                <note category="developer">this is a comment for foo4 (line 2 of 2)</note>
+            </notes>
+            <segment state="translated">
+                <source xml:lang="en">bar4</source>
+                <target xml:lang="test">ḃáŕ4</target>
+            </segment>
+        </unit>
+        <unit id="b3f8891da76b3364f7212ee8bcdea7cc">
+            <mda:metadata>
+                <mda:metaGroup category="serge_io">
+                    <mda:meta type="context">etc</mda:meta>
+                </mda:metaGroup>
+            </mda:metadata>
+            <notes>
+                <note category="developer">foo5</note>
+            </notes>
+            <segment state="translated">
+                <source xml:lang="en">bar5</source>
+                <target xml:lang="test">ḃáŕ5</target>
+            </segment>
+        </unit>
+        <unit id="2c5fde62c6eaf3281007175ff722fac8">
+            <mda:metadata>
+                <mda:metaGroup category="serge_io">
+                    <mda:meta type="context">bar</mda:meta>
+                </mda:metaGroup>
+            </mda:metadata>
+            <notes>
+                <note category="developer">bar</note>
+                <note category="developer">this is a comment for bar</note>
+            </notes>
+            <segment state="translated">
+                <source xml:lang="en">bar</source>
+                <target xml:lang="test">ḃáŕ</target>
+            </segment>
+        </unit>
+    </file>
+</xliff>
