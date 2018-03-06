@@ -1,0 +1,15 @@
+jobs
+{
+    {
+        @inherit                                 ../../common.serge#job_template
+
+        source_match                             \.properties$
+
+        parser
+        {
+            plugin                               parse_properties_ex
+        }
+
+        +destination_languages                   de
+    }
+}
