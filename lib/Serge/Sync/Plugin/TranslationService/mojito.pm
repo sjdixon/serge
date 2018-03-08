@@ -20,6 +20,7 @@ sub init {
         project_id     => 'STRING',
         application_properties => 'STRING',
         source_files_path => 'STRING',
+        source_language => 'STRING',
         localized_files_path => 'STRING',
         import_translations => 'BOOLEAN'
     });
@@ -35,6 +36,7 @@ sub validate_data {
     $self->{data}->{source_files_path} = subst_macros($self->{data}->{source_files_path});
     $self->{data}->{localized_files_path} = subst_macros($self->{data}->{localized_files_path});
     $self->{data}->{import_translations} = subst_macros($self->{data}->{import_translations});
+    $self->{data}->{source_locale} = subst_macros($self->{data}->{source_locale});
 
     die "'project_id' not defined" unless defined $self->{data}->{project_id};
 
@@ -49,6 +51,7 @@ sub validate_data {
     die "'localized_files_path', which is set to '$self->{data}->{localized_files_path}', does not point to a valid directory.\n" unless -d $self->{data}->{localized_files_path};
 
     $self->{data}->{import_translations} = 1 unless defined $self->{data}->{import_translations};
+    $self->{data}->{source_language} = 'en' unless defined $self->{data}->{source_language};
 }
 
 sub run_mojito_cli {
@@ -63,7 +66,9 @@ sub run_mojito_cli {
     }
 
     if ($langs) {
-        my @locale_mapping = map {$self->get_mojito_locale_mapping($_)} @$langs;
+        my @localizable_langs = grep { $_ ne $self->{data}->{source_language} } @$langs;
+
+        my @locale_mapping = map {$self->get_mojito_locale_mapping($_)} @localizable_langs;
 
         my $locale_mapping_as_string = join(',', @locale_mapping);
 
