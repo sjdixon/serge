@@ -17,12 +17,14 @@ sub init {
     $self->{optimizations} = 1;
 
     $self->merge_schema({
-        project_id     => 'STRING',
+        project_id             => 'STRING',
         application_properties => 'STRING',
-        source_files_path => 'STRING',
-        source_language => 'STRING',
-        localized_files_path => 'STRING',
-        import_translations => 'BOOLEAN'
+        source_files_path      => 'STRING',
+        source_language        => 'STRING',
+        localized_files_path   => 'STRING',
+        import_translations    => 'BOOLEAN',
+        inheritance_mode       => 'STRING',
+        file_type              => 'STRING'
     });
 }
 
@@ -37,6 +39,8 @@ sub validate_data {
     $self->{data}->{localized_files_path} = subst_macros($self->{data}->{localized_files_path});
     $self->{data}->{import_translations} = subst_macros($self->{data}->{import_translations});
     $self->{data}->{source_locale} = subst_macros($self->{data}->{source_locale});
+    $self->{data}->{inheritance_mode} = subst_macros($self->{data}->{inheritance_mode});
+    $self->{data}->{file_type} = subst_macros($self->{data}->{file_type});
 
     die "'project_id' not defined" unless defined $self->{data}->{project_id};
 
@@ -52,6 +56,7 @@ sub validate_data {
 
     $self->{data}->{import_translations} = 1 unless defined $self->{data}->{import_translations};
     $self->{data}->{source_language} = 'en' unless defined $self->{data}->{source_language};
+    $self->{data}->{inheritance_mode} = 'REMOVE_UNTRANSLATED' unless defined $self->{data}->{inheritance_mode};
 }
 
 sub run_mojito_cli {
@@ -75,6 +80,10 @@ sub run_mojito_cli {
         $command .= ' --locale-mapping '.$locale_mapping_as_string;
     }
 
+    if (defined $self->{data}->{file_type}) {
+        $command .= ' -ft '.$self->{data}->{file_type};
+    }
+
     $command = 'mojito '.$command;
     print "Running '$command'...\n";
 
@@ -94,7 +103,7 @@ sub get_mojito_locale_mapping {
 sub pull_ts {
     my ($self, $langs) = @_;
 
-    my $action = 'pull -t '.$self->{data}->{localized_files_path};
+    my $action = 'pull --inheritance-mode '.$self->{data}->{inheritance_mode}.' -t '.$self->{data}->{localized_files_path};
 
     return $self->run_mojito_cli($action, $langs);
 }
