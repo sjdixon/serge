@@ -24,7 +24,8 @@ sub init {
         localized_files_path   => 'STRING',
         import_translations    => 'BOOLEAN',
         inheritance_mode       => 'STRING',
-        file_type              => 'STRING'
+        file_type              => 'STRING',
+        status_equal_target    => 'STRING'
     });
 }
 
@@ -41,6 +42,7 @@ sub validate_data {
     $self->{data}->{source_locale} = subst_macros($self->{data}->{source_locale});
     $self->{data}->{inheritance_mode} = subst_macros($self->{data}->{inheritance_mode});
     $self->{data}->{file_type} = subst_macros($self->{data}->{file_type});
+    $self->{data}->{status_equal_target} = subst_macros($self->{data}->{status_equal_target});
 
     die "'project_id' not defined" unless defined $self->{data}->{project_id};
 
@@ -119,6 +121,10 @@ sub push_ts {
 
     if ($self->{data}->{import_translations}) {
         my $action = 'import -t '.$self->{data}->{localized_files_path};
+
+        if ($self->{data}->{status_equal_target} ne '') {
+            $action .= ' --status-equal-target '.$self->{data}->{status_equal_target};
+        }
 
         $cli_return = $self->run_mojito_cli($action, $langs);
     }
