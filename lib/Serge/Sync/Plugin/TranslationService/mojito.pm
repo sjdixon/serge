@@ -25,7 +25,8 @@ sub init {
         import_translations    => 'BOOLEAN',
         inheritance_mode       => 'STRING',
         file_type              => 'STRING',
-        status_equal_target    => 'STRING'
+        status_equal_target    => 'STRING',
+        status_pull            => 'STRING'
     });
 }
 
@@ -43,6 +44,7 @@ sub validate_data {
     $self->{data}->{inheritance_mode} = subst_macros($self->{data}->{inheritance_mode});
     $self->{data}->{file_type} = subst_macros($self->{data}->{file_type});
     $self->{data}->{status_equal_target} = subst_macros($self->{data}->{status_equal_target});
+    $self->{data}->{status_pull} = subst_macros($self->{data}->{status_pull});
 
     die "'project_id' not defined" unless defined $self->{data}->{project_id};
 
@@ -59,6 +61,7 @@ sub validate_data {
     $self->{data}->{import_translations} = 1 unless defined $self->{data}->{import_translations};
     $self->{data}->{source_language} = 'en' unless defined $self->{data}->{source_language};
     $self->{data}->{inheritance_mode} = 'REMOVE_UNTRANSLATED' unless defined $self->{data}->{inheritance_mode};
+    $self->{data}->{status_pull} = 'ACCEPTED' unless defined $self->{data}->{status_pull};
 }
 
 sub run_mojito_cli {
@@ -106,6 +109,7 @@ sub pull_ts {
     my ($self, $langs) = @_;
 
     my $action = 'pull --inheritance-mode '.$self->{data}->{inheritance_mode}.' -t '.$self->{data}->{localized_files_path};
+    $action .= ' --status '.$self->{data}->{status_pull};
 
     return $self->run_mojito_cli($action, $langs);
 }
