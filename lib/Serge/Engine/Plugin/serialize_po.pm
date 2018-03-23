@@ -20,6 +20,7 @@ sub init {
     $self->merge_schema({
         use_hint_for_context => 'BOOLEAN',
         use_key_as_msgctx => 'BOOLEAN',
+        skip_untranslated => 'BOOLEAN',
     });
 }
 
@@ -31,6 +32,8 @@ sub validate_data {
     $self->{data}->{use_hint_for_context} = 0 unless defined $self->{data}->{use_hint_for_context};
 
     $self->{data}->{use_key_as_msgctx} = 0 unless defined $self->{data}->{use_key_as_msgctx};
+
+    $self->{data}->{skip_untranslated} = 0 unless defined $self->{data}->{skip_untranslated};
 }
 
 sub serialize {
@@ -50,6 +53,10 @@ msgstr ""
 |;
 
     foreach my $unit (@$units) {
+        if (not $unit->{target} and $self->{data}->{skip_untranslated}) {
+            next;
+        }
+
         $text .= "\n"; # add whitespace before the entry
 
         # The ordering of the lines matches the Pootle style and is the following:
@@ -160,9 +167,6 @@ sub deserialize {
     #  "line1\n"
     #  "line2"
     #  ...
-
-    # normalize line breaks (Windows->Unix)
-    $$textref =~ s/\r\n/\n/sg;
 
     # join multi-line entries
     $$textref =~ s/"\n"//sg;
@@ -306,14 +310,14 @@ sub deserialize {
         }
 
         push @units, {
-                key => $key,
-                source => $string,
-                context => $context,
-                target => $translation,
-                comment => $comment, # translator's comments
-                fuzzy => $fuzzy,
-                flags => \@flags,
-            };
+            key => $key,
+            source => $string,
+            context => $context,
+            target => $translation,
+            comment => $comment, # translator's comments
+            fuzzy => $fuzzy,
+            flags => \@flags,
+        };
     }
 
     return \@units;
