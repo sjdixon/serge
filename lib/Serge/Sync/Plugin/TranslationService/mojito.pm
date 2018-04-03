@@ -26,7 +26,8 @@ sub init {
         inheritance_mode       => 'STRING',
         file_type              => 'STRING',
         status_equal_target    => 'STRING',
-        status_pull            => 'STRING'
+        status_pull            => 'STRING',
+        destination_locales    => 'ARRAY'
     });
 }
 
@@ -45,6 +46,7 @@ sub validate_data {
     $self->{data}->{file_type} = subst_macros($self->{data}->{file_type});
     $self->{data}->{status_equal_target} = subst_macros($self->{data}->{status_equal_target});
     $self->{data}->{status_pull} = subst_macros($self->{data}->{status_pull});
+    $self->{data}->{destination_locales} = subst_macros($self->{data}->{destination_locales});
 
     die "'project_id' not defined" unless defined $self->{data}->{project_id};
 
@@ -62,6 +64,10 @@ sub validate_data {
     $self->{data}->{source_language} = 'en' unless defined $self->{data}->{source_language};
     $self->{data}->{inheritance_mode} = 'REMOVE_UNTRANSLATED' unless defined $self->{data}->{inheritance_mode};
     $self->{data}->{status_pull} = 'ACCEPTED' unless defined $self->{data}->{status_pull};
+
+    if (!exists $self->{data}->{destination_locales} or scalar(@{$self->{data}->{destination_locales}}) == 0) {
+        die "the list of destination languages is empty";
+    }
 }
 
 sub run_mojito_cli {
@@ -111,7 +117,7 @@ sub pull_ts {
     my $action = 'pull --inheritance-mode '.$self->{data}->{inheritance_mode}.' -t '.$self->{data}->{localized_files_path};
     $action .= ' --status '.$self->{data}->{status_pull};
 
-    return $self->run_mojito_cli($action, $langs);
+    return $self->run_mojito_cli($action, $self->get_langs($langs));
 }
 
 sub push_ts {
@@ -130,10 +136,20 @@ sub push_ts {
             $action .= ' --status-equal-target '.$self->{data}->{status_equal_target};
         }
 
-        $cli_return = $self->run_mojito_cli($action, $langs);
+        $cli_return = $self->run_mojito_cli($action, $self->get_langs($langs));
     }
 
     return $cli_return;
+}
+
+sub get_langs {
+    my ($self, $langs) = @_;
+
+    if (!$langs) {
+        $langs = $self->{data}->{destination_locales};
+    }
+
+    return $langs;
 }
 
 1;
