@@ -3,7 +3,6 @@ use parent Serge::Sync::Plugin::Base::TranslationService, Serge::Interface::SysC
 
 use strict;
 
-use File::chdir;
 use Serge::Util qw(subst_macros);
 
 sub name {
