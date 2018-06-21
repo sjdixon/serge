@@ -63,7 +63,8 @@ sub init {
     $self->add({
         before_job => \&before_job,
         after_load_file => \&check,
-        after_load_source_file_for_processing => \&after_load_source_file_for_processing,
+        after_load_source_file_for_processing => \&after_load_file_for_processing,
+        after_load_ts_file_for_processing => \&after_load_file_for_processing,
         before_save_localized_file => \&check,
     });
 }
@@ -97,7 +98,7 @@ sub before_job {
     $job->{plugin_data}->{check_if}->{flags} = {};
 }
 
-sub after_load_source_file_for_processing {
+sub after_load_file_for_processing {
     my ($self, $phase, $file, $strref) = @_;
 
     $self->check($phase, $file, undef, $strref);

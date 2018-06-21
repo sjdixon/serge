@@ -1,0 +1,1 @@
+Test for 'replace_strings' plugin, 'after_load_ts_file_for_processing' phase
