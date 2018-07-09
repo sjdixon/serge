@@ -32,6 +32,8 @@ my $builder = Module::Build->new(
         'XML::Parser::Style::IxTree' => 0,
         'XML::Twig'          => 0,
         'YAML::XS'           => 0,
+        'XML::LibXML'        => 0,
+        'XML::LibXSLT'       => 0,
     },
     recommends => {
         'IO::String'         => 0,
