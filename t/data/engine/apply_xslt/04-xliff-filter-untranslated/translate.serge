@@ -16,7 +16,7 @@ jobs
                     translations
                     {
                         `Value 1`                ``
-                        `Value 2`                `Test Translation Two`
+                        `Value 2`                `Test Translation  Two  `
                     }
                 }
             }

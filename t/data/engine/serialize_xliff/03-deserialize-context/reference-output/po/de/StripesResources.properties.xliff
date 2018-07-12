@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
-    <file datatype="" original="StripesResources.properties" source-language="en" target-language="de">
+    <file datatype="x-unknown" original="StripesResources.properties" source-language="en" target-language="de">
         <body>
             <trans-unit approved="yes" id="05c382b374518cc317f4ec0f98409fa0" xml:space="preserve">
                 <source xml:lang="en">bar</source>

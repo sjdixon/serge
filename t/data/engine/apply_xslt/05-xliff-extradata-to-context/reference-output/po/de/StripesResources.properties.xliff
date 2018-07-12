@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
-    <file datatype="" original="StripesResources.properties" source-language="en" target-language="de">
+    <file datatype="x-unknown" original="StripesResources.properties" source-language="en" target-language="de">
         <body>
             <trans-unit approved="yes" id="05c382b374518cc317f4ec0f98409fa0" xml:space="preserve">
                 <source xml:lang="en">bar</source>
-                <target state="translated" xml:lang="de">bar-one</target>
+                <target state="translated" xml:lang="de">bar-ein</target>
                 <note from="developer">foo</note>
                 <note from="developer">this is a comment for foo</note>
                 <context-group name="serge" purpose="x-serge">
@@ -14,7 +14,7 @@
             </trans-unit>
             <trans-unit approved="yes" id="e5f2adbdbe00c558062db891f2072489" xml:space="preserve">
                 <source xml:lang="en">bar2</source>
-                <target state="translated" xml:lang="de">bar-two</target>
+                <target state="translated" xml:lang="de">bar-zwei</target>
                 <note from="developer">foo2</note>
                 <note from="developer">this is a comment for foo2</note>
                 <note from="developer">#specialFlag</note>
@@ -35,7 +35,7 @@
             </trans-unit>
             <trans-unit approved="no" id="2c5fde62c6eaf3281007175ff722fac8" xml:space="preserve">
                 <source xml:lang="en">bar</source>
-                <target state="translated" xml:lang="de">bar-new</target>
+                <target state="translated" xml:lang="de">bar-neu</target>
                 <note from="developer">bar</note>
                 <note from="developer">this is a comment for bar</note>
                 <context-group name="serge" purpose="x-serge">

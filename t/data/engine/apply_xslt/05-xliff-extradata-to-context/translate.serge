@@ -49,5 +49,19 @@ jobs
         }
 
         ts_file_path                             ./test-output/po/%LOCALE%/%FILE%.xliff
+
+
+        callback_plugins
+        {
+            {
+                plugin                           apply_xslt
+                phase                            before_deserialize_ts_file
+
+                data
+                {
+                    apply                        ./xliff_extradata_to_context.xslt
+                }
+            }
+        }
     }
 }

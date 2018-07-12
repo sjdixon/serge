@@ -31,7 +31,7 @@ sub serialize {
         version => "1.2",
     });
 
-    my $file_element = $root_element->insert_new_elt('file' => {original => $file, 'source-language' => $source_locale, datatype => $self->{data}->{file_datatype}}, '');
+    my $file_element = $root_element->insert_new_elt('file' => {original => $file, 'source-language' => $source_locale, datatype => 'x-unknown'}, '');
 
     if ($source_lang ne $lang) {
         $file_element->set_att('target-language' => $target_locale);
