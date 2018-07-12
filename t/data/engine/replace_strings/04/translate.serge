@@ -45,7 +45,7 @@ jobs
         {
             {
                 plugin                           replace_strings
-                phase                            after_load_ts_file_for_processing
+                phase                            before_deserialize_ts_file
 
                 data
                 {

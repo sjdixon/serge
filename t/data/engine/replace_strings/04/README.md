@@ -1,1 +1,1 @@
-Test for 'replace_strings' plugin, 'after_load_ts_file_for_processing' phase
+Test for 'replace_strings' plugin, 'before_deserialize_ts_file' phase
