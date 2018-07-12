@@ -19,11 +19,15 @@ sub init {
     $self->SUPER::init(@_);
 
     $self->merge_schema({
-        xslt              => 'STRING',
+        apply => {'' => 'LIST',
+            '*'        => 'STRING'
+        },
         if => {
             '*' => {
                 then => {
-                    xslt              => 'STRING'
+                    apply => {'' => 'LIST',
+                        '*'        => 'STRING'
+                    },
                 },
             },
         },
@@ -33,6 +37,8 @@ sub init {
         after_load_file => \&check,
         before_save_localized_file => \&check,
     });
+
+    $self->{stylesheets} = {};
 }
 
 sub validate_data {
@@ -40,13 +46,11 @@ sub validate_data {
 
     $self->SUPER::validate_data;
 
-    die "'xslt' not defined" unless defined $self->{data}->{xslt};
-    die "'xslt', which is set to '$self->{data}->{xslt}', does not point to a valid file.\n" unless -f $self->{data}->{xslt};
+    die "'apply' parameter is not specified and no 'if' blocks found" if !exists $self->{data}->{if} && !$self->{data}->{apply};
 
     if (exists $self->{data}->{if}) {
         foreach my $block (@{$self->{data}->{if}}) {
-            die "'xslt' parameter is not specified inside if/then block" unless defined $block->{then}->{xslt};
-            die "'xslt', inside if/then block, which is set to '$self->{data}->{xslt}', does not point to a valid file.\n" unless -f $block->{then}->{xslt};
+            die "'replace' parameter is not specified inside if/then block" if !$block->{then}->{apply};
         }
     }
 }
@@ -67,16 +71,28 @@ sub process_then_block {
     #print "::process_then_block(), phase=[$phase], block=[$block], file=[$file], lang=[$lang], strref=[$strref]\n";
 
     my $parser = XML::LibXML->new();
-    my $xslt = XML::LibXSLT->new();
 
     my $source = $parser->parse_string($$strref);
 
-    my $style_doc = $parser->parse_file($block->{xslt});
-    my $stylesheet = $xslt->parse_stylesheet($style_doc);
+    my $apply_list = $block->{apply};
+    foreach my $apply (@$apply_list) {
 
-    my $results = $stylesheet->transform($source);
+        if (not exists $self->{stylesheets}{$apply})
+        {
+            my $xslt = XML::LibXSLT->new();
 
-    $$strref = $stylesheet->output_string($results);
+            my $style_doc = $parser->parse_file($apply);
+            my $stylesheet = $xslt->parse_stylesheet($style_doc);
+
+            $self->{stylesheets}{$apply} = $stylesheet;
+        }
+
+        my $stylesheet = $self->{stylesheets}{$apply};
+
+        $source = $stylesheet->transform($source);
+
+        $$strref = $stylesheet->output_string($source);
+    }
 
     return (shift @_)->SUPER::process_then_block(@_);
 }

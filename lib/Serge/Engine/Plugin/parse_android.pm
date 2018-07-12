@@ -6,7 +6,7 @@ use strict;
 no warnings qw(uninitialized);
 
 sub name {
-    return 'Android strings.xml parser plugin';
+    return 'Android strings1.xml parser plugin';
 }
 
 sub parse {
