@@ -941,6 +941,8 @@ sub update_database_from_ts_files_lang_file {
     } else {
         print "\t$fullpath\n";
 
+        $self->run_callbacks('after_load_ts_file_for_processing', $self->{current_file_rel}, \$text);
+
         # Parsing the file
 
         my $units;
