@@ -16,14 +16,14 @@
         <xsl:copy>
             <xsl:apply-templates select="@*|node()"/>
 
-            <xsl:if test="@extradata">
+            <xsl:if test="@resname">
                 <xsl:element name="context-group" namespace="{namespace-uri()}">
                     <xsl:attribute name="name">serge</xsl:attribute>
                     <xsl:attribute name="purpose">x-serge</xsl:attribute>
 
                     <xsl:element name="context" namespace="{namespace-uri()}">
                         <xsl:attribute name="context-type">x-serge-context</xsl:attribute>
-                        <xsl:value-of select="@extradata"/>
+                        <xsl:value-of select="@resname"/>
                     </xsl:element>
                 </xsl:element>
             </xsl:if>
@@ -32,6 +32,6 @@
 
     </xsl:template>
 
-    <xsl:template match="@extradata"/>
+    <xsl:template match="@resname"/>
 
 </xsl:stylesheet>

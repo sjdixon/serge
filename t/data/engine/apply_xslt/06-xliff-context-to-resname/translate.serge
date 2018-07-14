@@ -4,20 +4,6 @@ jobs
         @inherit                                 ../../common.serge#job_template
         destination_languages                    de
 
-        source_match                             \.properties$
-
-        parser
-        {
-            plugin                               parse_properties
-        }
-
-        serializer
-        {
-            plugin                               serialize_xliff
-        }
-
-        ts_file_path                             ./test-output/po/%LOCALE%/%FILE%.xliff
-
         callback_plugins
         {
             {
@@ -26,7 +12,7 @@ jobs
 
                 data
                 {
-                    apply                        ./xliff_context_to_extradata.xslt
+                    apply                        ./xliff_context_to_resname.xslt
                 }
             },
             :copy-resources
@@ -39,16 +25,12 @@ jobs
                 }
             }
         }
-    },
-    {
-        @inherit                                 ../../common.serge#job_template
-        destination_languages                    de
 
-        source_match                             \.properties$
+        source_match                             ^messages\.json$
 
         parser
         {
-            plugin                               parse_properties
+            plugin                               parse_chrome_json
         }
 
         serializer
@@ -56,7 +38,11 @@ jobs
             plugin                               serialize_xliff
         }
 
-        ts_file_path                             ./test-output/po/%LOCALE%/updated-%FILE%.xliff
+        ts_file_path                             ./test-output/po/%LOCALE%/%FILE%.xliff
+    },
+    {
+        @inherit                                 ../../common.serge#job_template
+        destination_languages                    de
 
         callback_plugins
         {
@@ -66,9 +52,23 @@ jobs
 
                 data
                 {
-                    apply                        ./xliff_extradata_to_context.xslt
+                    apply                        ./xliff_resname_to_context.xslt
                 }
-            },
+            }
         }
+
+        source_match                             ^messages\.json$
+
+        parser
+        {
+            plugin                               parse_chrome_json
+        }
+
+        serializer
+        {
+            plugin                               serialize_xliff
+        }
+
+        ts_file_path                             ./test-output/po/%LOCALE%/updated-%FILE%.xliff
     }
 }
