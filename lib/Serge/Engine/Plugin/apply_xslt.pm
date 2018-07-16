@@ -4,9 +4,11 @@ use parent Serge::Engine::Plugin::if;
 use XML::LibXSLT;
 use XML::LibXML;
 use strict;
+use utf8;
 
 no warnings qw(uninitialized);
 
+use Encode qw(decode_utf8);
 use Serge::Util qw(subst_macros_strref);
 
 sub name {
@@ -91,7 +93,11 @@ sub process_then_block {
 
         $source = $stylesheet->transform($source);
 
-        $$strref = $stylesheet->output_string($source);
+        my $source_as_string = $stylesheet->output_string($source);
+
+        $source_as_string = decode_utf8($source_as_string);
+
+        $$strref = $source_as_string;
     }
 
     return (shift @_)->SUPER::process_then_block(@_);

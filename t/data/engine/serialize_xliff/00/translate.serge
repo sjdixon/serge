@@ -15,8 +15,9 @@ jobs
 
                     translations
                     {
-                        `Value 1`                ``
-                        `Value 2`                `Test Translation Two`
+                        `Value 1`                `翻译`
+                        `Value 2`                `Übersetzung über Straße  `
+                        `Value 4`                `Là récente et la plus sûre`
                     }
                 }
             }
