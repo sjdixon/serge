@@ -6,13 +6,5 @@
   "string2": {
     "message": "Value 2",
     "description": "Description 2"
-  },
-  "string3": {
-    "message": "Value 3",
-    "description": "Description 3"
-  },
-  "string4": {
-    "message": "Value 4",
-    "description": "Description 4"
   }
 }

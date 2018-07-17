@@ -88,22 +88,18 @@ sub serialize {
             $unit_element->set_att('resname' => $resname);
         }
 
-        if ($source_lang ne $lang) {
-            my $target_element = $unit_element->insert_new_elt('target' => {'xml:lang' => $target_locale}, $unit->{target});
+        my $target_element = $unit_element->insert_new_elt('target' => {'xml:lang' => $target_locale}, $unit->{target});
 
-            my $state = '';
+        my $state = '';
 
-            if ($self->{data}->{source_language} ne $lang) {
-                if ($unit->{target} ne '') {
-                    $state = 'translated';
-                } else {
-                    $state = 'new';
-                }
-            }
+        if ($unit->{target} ne '') {
+            $state = 'translated';
+        } else {
+            $state = 'new';
+        }
 
-            if ($state ne '') {
-                $target_element->set_att('state' => $state);
-            }
+        if ($state ne '') {
+            $target_element->set_att('state' => $state);
         }
 
         $unit_element->insert_new_elt('source' => {'xml:lang' => $source_locale}, $unit->{source});
