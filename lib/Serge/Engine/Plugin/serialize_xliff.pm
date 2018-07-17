@@ -23,8 +23,8 @@ sub serialize {
 
     my $source_lang = $self->{parent}->{source_language};
 
-    my $source_locale = locale_from_lang($source_lang);
-    my $target_locale = locale_from_lang($lang);
+    my $source_locale = $self->language_from_lang($source_lang);
+    my $target_locale = $self->language_from_lang($lang);
 
     my $root_element = XML::Twig::Elt->new('xliff', {
         'xmlns' => "urn:oasis:names:tc:xliff:document:1.2",
@@ -209,6 +209,12 @@ sub deserialize {
     }
 
     return \@units;
+}
+
+sub language_from_lang {
+    my ($self, $language) = @_;
+    $language =~ s/(-.+?)(-.+)?$/uc($1).$2/e; # convert e.g. 'pt-br-Whatever' to 'pt-BR-Whatever'
+    return $language;
 }
 
 1;

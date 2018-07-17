@@ -2,6 +2,7 @@ jobs
 {
     {
         @inherit                                 ../../common.serge#job_template
+        +destination_languages                    de-at
 
         callback_plugins
         {
