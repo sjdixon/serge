@@ -6,5 +6,8 @@
   "string2": {
     "message": "Value 2",
     "description": "Description 2"
+  },
+  "string3": {
+    "message": "Value 3"
   }
 }

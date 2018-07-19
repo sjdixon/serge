@@ -2,7 +2,6 @@ jobs
 {
     {
         @inherit                                 ../../common.serge#job_template
-        +destination_languages                    de-at
 
         callback_plugins
         {
@@ -16,9 +15,20 @@ jobs
 
                     translations
                     {
-                        `Value 1`                ``
-                        `Value 2`                `Test Translation Two`
+                        `Value 1`                `翻译`
+                        `Value 2`                `Übersetzung über Straße  `
+                        `Value 4`                `Là récente et la plus sûre`
                     }
+                }
+            }
+
+            {
+                plugin                           apply_xslt
+                phase                            after_serialize_ts_file
+
+                data
+                {
+                    apply                        ./xliff_filter_untranslated.xslt
                 }
             }
         }
