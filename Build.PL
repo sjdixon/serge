@@ -33,6 +33,8 @@ my $builder = Module::Build->new(
         'XML::Twig'          => 0,
         'XML::Tidy'          => 0,
         'YAML::XS'           => 0,
+        'XML::LibXML'        => 0,
+        'XML::LibXSLT'       => 0,
     },
     recommends => {
         'IO::String'         => 0,
