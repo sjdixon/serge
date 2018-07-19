@@ -912,7 +912,7 @@ sub update_database_from_ts_files_lang_file {
     $self->{current_file_rel} = $relfile;
     $self->{current_file_id} = undef;
 
-    my $fullpath = $self->{job}->get_full_ts_file_path($relfile, $lang);
+    my $fullpath = $self->get_full_ts_file_path($relfile, $lang);
 
     if (!-f $fullpath) {
         print "\tFile does not exist: $fullpath\n" if $self->{debug};
@@ -1149,16 +1149,32 @@ sub generate_ts_files_for_file {
     }
 }
 
+sub get_full_ts_file_path {
+    my ($self, $file, $lang) = @_;
+
+    my $ts_file = $file;
+
+    my ($f) = $self->run_callbacks('rewrite_relative_ts_file_path', $file, $lang);
+    $ts_file = $f if $f;
+
+    my $fullpath = $self->{job}->get_full_ts_file_path($ts_file, $lang);
+
+    ($f) = $self->run_callbacks('rewrite_absolute_ts_file_path', $fullpath, $lang);
+    $fullpath = $f if $f;
+
+    return $fullpath;
+}
+
 sub generate_ts_files_for_file_lang {
     my ($self, $file, $lang) = @_;
 
-    my $fullpath = $self->{job}->get_full_ts_file_path($file, $lang);
-
     my $result = combine_and(1, $self->run_callbacks('can_generate_ts_file', $file, $lang));
     if ($result eq '0') {
-        print "\t\tSkip generating $fullpath because at least one callback returned 0\n" if $self->{debug};
+        print "\t\tSkip generating TS file for $file:$lang because at least one callback returned 0\n" if $self->{debug};
         return;
     }
+
+    my $fullpath = $self->get_full_ts_file_path($file, $lang);
 
     my $namespace = $self->{job}->{db_namespace};
     my $locale = locale_from_lang($lang);
