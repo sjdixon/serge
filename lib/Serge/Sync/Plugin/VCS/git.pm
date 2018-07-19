@@ -27,8 +27,9 @@ sub init {
 
     $self->merge_schema({
         clone_params => 'STRING',
-        name => 'STRING',
-        email => 'STRING'
+        name         => 'STRING',
+        email        => 'STRING',
+        no_verify    => 'BOOLEAN'
     });
 }
 
@@ -42,6 +43,8 @@ sub validate_data {
         $self->{data}->{$_} = subst_macros($self->{data}->{$_});
         die "'$_' evaluates to an empty value" if $self->{data}->{$_} eq '';
     } qw(name email);
+
+    $self->{data}->{no_verify} = 0 unless defined $self->{data}->{no_verify};
 }
 
 sub split_remote_path_branch {
@@ -194,10 +197,14 @@ sub commit {
     # prepare the final message
     $message = $self->_update_message($message);
     # split the multiline message into a series of -m "..." -m "..."
-    my $msg_parameters = join(' ', map { "-m \"$_\"" } split(/\n+/s, $message));
+    my $parameters = join(' ', map { "-m \"$_\"" } split(/\n+/s, $message));
+
+    if ($self->{data}->{no_verify}) {
+        $parameters = '--no-verify '.$parameters;
+    }
 
     # commit locally
-    $self->run_in($local_path, qq|git commit $msg_parameters|);
+    $self->run_in($local_path, qq|git commit $parameters|);
 
     # fetch changes from remote server
     $self->run_in($local_path, qq|git fetch|);
@@ -215,7 +222,13 @@ sub _push {
 
     ($remote_path, my $branch) = $self->split_remote_path_branch($remote_path);
 
-    $self->run_in($local_path, qq|git push origin $branch|);
+    my $parameters = $branch;
+
+    if ($self->{data}->{no_verify}) {
+        $parameters .= ' --no-verify ';
+    }
+
+    $self->run_in($local_path, qq|git push origin $parameters|);
 }
 
 1;
